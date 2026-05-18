@@ -1,0 +1,3215 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>KurdLearn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ══════════════════════════════════════
+   ROOT & RESET
+══════════════════════════════════════ */
+        :root {
+            --bg: #07090f;
+            --bg1: #0c0f1a;
+            --bg2: #111826;
+            --bg3: #17202f;
+            --glass: rgba(255, 255, 255, 0.04);
+            --glass2: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.07);
+            --border2: rgba(255, 255, 255, 0.13);
+            --gold: #f0a500;
+            --gold2: #ffc94a;
+            --gold3: #fff0c2;
+            --emerald: #0fd47e;
+            --sky: #38c8f8;
+            --violet: #b69aff;
+            --rose: #ff637a;
+            --text: #eef2ff;
+            --text2: #8895b0;
+            --text3: #4a5568;
+            --nav-h: 72px;
+            --safe-bot: env(safe-area-inset-bottom, 0px);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Sans Arabic', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            direction: rtl;
+            overflow-x: hidden;
+            min-height: 100dvh;
+            padding-bottom: calc(var(--nav-h) + var(--safe-bot) + 16px);
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+
+        /* ══════════════════════════════════════
+   SPLASH / LOADER
+══════════════════════════════════════ */
+        #splash {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .splash-logo-ring {
+            width: 96px;
+            height: 96px;
+            border-radius: 28px;
+            background: linear-gradient(145deg, #1a1f30, #0c0f1a);
+            border: 1.5px solid rgba(240, 165, 0, .3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.6rem;
+            box-shadow: 0 0 60px rgba(240, 165, 0, .18), inset 0 0 30px rgba(240, 165, 0, .05);
+            animation: splashPulse 1.6s ease-in-out infinite;
+        }
+
+        @keyframes splashPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 40px rgba(240, 165, 0, .15)
+            }
+
+            50% {
+                box-shadow: 0 0 80px rgba(240, 165, 0, .35)
+            }
+        }
+
+        .splash-wordmark {
+            font-size: 1.9rem;
+            font-weight: 900;
+            letter-spacing: -.5px;
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .splash-bar-wrap {
+            width: 160px;
+            height: 3px;
+            background: var(--bg3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .splash-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--gold2));
+            border-radius: 3px;
+            animation: splashLoad 2s cubic-bezier(.4, 0, .2, 1) forwards;
+        }
+
+        @keyframes splashLoad {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+        .splash-sub {
+            font-size: .78rem;
+            color: var(--text3);
+        }
+
+        /* ══════════════════════════════════════
+   APP SHELL
+══════════════════════════════════════ */
+        #app {
+            opacity: 0;
+            transition: opacity .5s .1s;
+        }
+
+        #app.ready {
+            opacity: 1;
+        }
+
+        /* ══════════════════════════════════════
+   TOP STATUS BAR (app feel)
+══════════════════════════════════════ */
+        .status-bar {
+            position: sticky;
+            top: 0;
+            z-index: 800;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background: rgba(7, 9, 15, .85);
+            backdrop-filter: blur(24px) saturate(1.8);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sb-logo {
+            font-size: 1.35rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sb-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sb-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--glass2);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: .25s;
+            user-select: none;
+        }
+
+        .sb-btn:active {
+            transform: scale(.92);
+            background: var(--glass);
+        }
+
+        .sb-notif-dot {
+            position: absolute;
+            top: 7px;
+            left: 7px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--rose);
+            border: 1.5px solid var(--bg);
+        }
+
+        .sb-btn-wrap {
+            position: relative;
+        }
+
+        /* ══════════════════════════════════════
+   PAGES
+══════════════════════════════════════ */
+        .page {
+            display: none;
+            padding: 0 0 24px;
+            animation: pageIn .35s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes pageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ══════════════════════════════════════
+   BOTTOM NAV
+══════════════════════════════════════ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 900;
+            height: var(--nav-h);
+            background: rgba(10, 13, 22, .95);
+            backdrop-filter: blur(28px) saturate(2);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding-bottom: var(--safe-bot);
+        }
+
+        .bn-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px 0;
+            transition: .25s;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+
+        .bn-icon {
+            font-size: 1.35rem;
+            transition: .3s;
+            filter: grayscale(1) opacity(.45);
+        }
+
+        .bn-label {
+            font-size: .62rem;
+            font-weight: 600;
+            color: var(--text3);
+            transition: .3s;
+            white-space: nowrap;
+        }
+
+        .bn-item.active .bn-icon {
+            filter: none;
+            transform: translateY(-3px);
+        }
+
+        .bn-item.active .bn-label {
+            color: var(--gold);
+        }
+
+        .bn-pip {
+            position: absolute;
+            bottom: 8px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--gold);
+            opacity: 0;
+            transition: .3s;
+        }
+
+        .bn-item.active .bn-pip {
+            opacity: 1;
+        }
+
+        .bn-item:not(.active):hover .bn-icon {
+            filter: grayscale(.4) opacity(.7);
+        }
+
+        /* ══════════════════════════════════════
+   COMMON COMPONENTS
+══════════════════════════════════════ */
+        .section-pad {
+            padding: 24px 20px 8px;
+        }
+
+        .pill-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--gold);
+            background: rgba(240, 165, 0, .1);
+            border: 1px solid rgba(240, 165, 0, .2);
+            padding: 4px 12px;
+            border-radius: 50px;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 1.55rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 6px;
+        }
+
+        .section-sub {
+            font-size: .88rem;
+            color: var(--text2);
+            line-height: 1.7;
+        }
+
+        /* Card base */
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            transition: transform .3s, border-color .3s, box-shadow .3s;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--border2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
+        }
+
+        .card:active {
+            transform: scale(.98);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 26px;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: .9rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: .25s;
+            user-select: none;
+        }
+
+        .btn:active {
+            transform: scale(.97);
+        }
+
+        .btn-fill {
+            background: linear-gradient(135deg, var(--gold), #d48c00);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(240, 165, 0, .35);
+        }
+
+        .btn-fill:hover {
+            box-shadow: 0 8px 32px rgba(240, 165, 0, .55);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border2);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(240, 165, 0, .06);
+        }
+
+        .btn-ghost {
+            background: var(--glass2);
+            border: 1px solid var(--border);
+            color: var(--text2);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text);
+            background: var(--glass);
+        }
+
+        /* ══════════════════════════════════════
+   PAGE: HOME (سەرەکی)
+══════════════════════════════════════ */
+        .hero-block {
+            margin: 20px 20px 0;
+            padding: 36px 28px 32px;
+            border-radius: 28px;
+            background: linear-gradient(145deg, #111929, #0c1220);
+            border: 1px solid rgba(240, 165, 0, .15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-block::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            left: -60px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(240, 165, 0, .12), transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-block::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: -40px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(15, 212, 126, .08), transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--emerald);
+            box-shadow: 0 0 8px var(--emerald);
+            animation: liveDot 1.4s ease-in-out infinite;
+        }
+
+        @keyframes liveDot {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .3
+            }
+        }
+
+        .live-text {
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--emerald);
+        }
+
+        .hero-h {
+            font-size: 1.75rem;
+            font-weight: 900;
+            line-height: 1.25;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-h span {
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-p {
+            font-size: .88rem;
+            color: var(--text2);
+            line-height: 1.7;
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-cta-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-stats-row {
+            display: flex;
+            gap: 0;
+            margin: 18px 20px 0;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .hsr-item {
+            flex: 1;
+            padding: 16px 14px;
+            text-align: center;
+            border-left: 1px solid var(--border);
+            position: relative;
+        }
+
+        .hsr-item:last-child {
+            border: none;
+        }
+
+        .hsr-num {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .hsr-lbl {
+            font-size: .65rem;
+            color: var(--text3);
+            margin-top: 4px;
+        }
+
+        /* SEARCH BAR HOME */
+        .search-wrap {
+            margin: 18px 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg2);
+            border: 1.5px solid var(--border2);
+            border-radius: 16px;
+            padding: 4px 4px 4px 16px;
+            transition: border-color .3s;
+        }
+
+        .search-wrap:focus-within {
+            border-color: var(--gold);
+        }
+
+        .search-wrap input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: inherit;
+            font-size: .9rem;
+            text-align: right;
+        }
+
+        .search-wrap input::placeholder {
+            color: var(--text3);
+        }
+
+        .search-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold), #d48c00);
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: .25s;
+            flex-shrink: 0;
+        }
+
+        .search-btn:active {
+            transform: scale(.93);
+        }
+
+        /* CATEGORIES SCROLL */
+        .scroll-row {
+            display: flex;
+            gap: 12px;
+            padding: 0 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .scroll-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 50px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--text2);
+            transition: .25s;
+            flex-shrink: 0;
+        }
+
+        .cat-chip:active {
+            transform: scale(.95);
+        }
+
+        .cat-chip.active,
+        .cat-chip:hover {
+            background: rgba(240, 165, 0, .1);
+            border-color: rgba(240, 165, 0, .35);
+            color: var(--gold);
+        }
+
+        .cat-chip .ci {
+            font-size: 1rem;
+        }
+
+        /* FEATURE CARDS LARGE */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 20px;
+        }
+
+        .feat-card {
+            border-radius: 20px;
+            padding: 22px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .feat-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: rgba(0, 0, 0, .12);
+            opacity: 0;
+            transition: .25s;
+        }
+
+        .feat-card:hover::after {
+            opacity: 1;
+        }
+
+        .feat-card:active {
+            transform: scale(.97);
+        }
+
+        .feat-icon-lg {
+            font-size: 2.4rem;
+            line-height: 1;
+        }
+
+        .feat-title {
+            font-size: .92rem;
+            font-weight: 800;
+        }
+
+        .feat-count {
+            font-size: .72rem;
+            opacity: .7;
+        }
+
+        .feat-arrow {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, .18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            margin-top: auto;
+            align-self: flex-end;
+        }
+
+        /* PROMO BANNER */
+        .promo-banner {
+            margin: 18px 20px 0;
+            padding: 22px 24px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #1a1130, #0d1628);
+            border: 1px solid rgba(182, 154, 255, .2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .promo-banner::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(182, 154, 255, .15), transparent 70%);
+        }
+
+        .promo-text .promo-eyebrow {
+            font-size: .7rem;
+            font-weight: 700;
+            color: var(--violet);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 5px;
+        }
+
+        .promo-text .promo-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+
+        .promo-text .promo-desc {
+            font-size: .78rem;
+            color: var(--text2);
+        }
+
+        .promo-badge {
+            flex-shrink: 0;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--violet), #7c5cbf);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 20px rgba(182, 154, 255, .35);
+        }
+
+        /* HORIZONTAL SCROLL CARDS */
+        .hscroll {
+            padding: 0 20px;
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .hscroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* WHY CARD STRIP */
+        .why-strip {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0 20px;
+        }
+
+        .why-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: 16px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            transition: .25s;
+        }
+
+        .why-row:hover {
+            border-color: var(--border2);
+        }
+
+        .why-row-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .why-row-text .wrt {
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        .why-row-text .wrs {
+            font-size: .76rem;
+            color: var(--text2);
+            margin-top: 2px;
+        }
+
+        /* ══════════════════════════════════════
+   PAGE: EXPLORE (کشف)
+══════════════════════════════════════ */
+        .explore-chips {
+            display: flex;
+            gap: 8px;
+            padding: 0 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .explore-chips::-webkit-scrollbar {
+            display: none;
+        }
+
+        .explore-chip {
+            padding: 8px 16px;
+            border-radius: 50px;
+            flex-shrink: 0;
+            font-size: .78rem;
+            font-weight: 600;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        .explore-chip.active,
+        .explore-chip:hover {
+            background: rgba(240, 165, 0, .1);
+            border-color: rgba(240, 165, 0, .3);
+            color: var(--gold);
+        }
+
+        .explore-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            padding: 0 20px;
+        }
+
+        .explore-card {
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .explore-card:hover {
+            border-color: var(--border2);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, .5);
+        }
+
+        .explore-card:active {
+            transform: scale(.97);
+        }
+
+        .ec-thumb {
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .ec-thumb-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, .6));
+        }
+
+        .ec-body {
+            padding: 12px;
+        }
+
+        .ec-cat {
+            font-size: .62rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 4px;
+        }
+
+        .ec-title {
+            font-size: .82rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 6px;
+        }
+
+        .ec-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ec-rating {
+            font-size: .7rem;
+            color: var(--gold2);
+        }
+
+        .ec-price {
+            font-size: .78rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        /* FULL WIDTH EXPLORE CARD */
+        .explore-card-full {
+            margin: 0 20px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: .3s;
+            display: flex;
+            gap: 0;
+        }
+
+        .explore-card-full:hover {
+            border-color: var(--border2);
+        }
+
+        .ecf-thumb {
+            width: 100px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+        }
+
+        .ecf-body {
+            padding: 14px 14px 14px 0;
+            flex: 1;
+        }
+
+        .ecf-cat {
+            font-size: .62rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 4px;
+        }
+
+        .ecf-title {
+            font-size: .88rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 6px;
+        }
+
+        .ecf-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ecf-price {
+            font-size: .9rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .ecf-rating {
+            font-size: .72rem;
+            color: var(--gold2);
+        }
+
+        /* ══════════════════════════════════════
+   PAGE: LEARN (فێربوونەکانم)
+══════════════════════════════════════ */
+        .learn-hero {
+            margin: 20px 20px 0;
+            padding: 24px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #0f1e14, #091510);
+            border: 1px solid rgba(15, 212, 126, .15);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .learn-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--emerald), var(--sky));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 20px rgba(15, 212, 126, .3);
+        }
+
+        .learn-greet .lg-hi {
+            font-size: .75rem;
+            color: var(--text2);
+            margin-bottom: 3px;
+        }
+
+        .learn-greet .lg-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .learn-greet .lg-streak {
+            font-size: .72rem;
+            color: var(--emerald);
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* XP / Progress */
+        .xp-bar-wrap {
+            margin: 16px 20px 0;
+            padding: 16px 18px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .xp-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: .78rem;
+            color: var(--text2);
+            margin-bottom: 8px;
+        }
+
+        .xp-bar {
+            height: 8px;
+            background: var(--bg3);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--gold2));
+            border-radius: 50px;
+            transition: width 1.5s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .xp-milestones {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+        }
+
+        .xp-ms {
+            font-size: .6rem;
+            color: var(--text3);
+        }
+
+        /* Progress course cards */
+        .prog-card {
+            border-radius: 20px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            cursor: pointer;
+            transition: .3s;
+            flex-shrink: 0;
+            width: 230px;
+        }
+
+        .prog-card:hover {
+            border-color: var(--border2);
+            transform: translateY(-4px);
+        }
+
+        .prog-card:active {
+            transform: scale(.97);
+        }
+
+        .pc-thumb {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .pc-body {
+            padding: 14px;
+        }
+
+        .pc-title {
+            font-size: .88rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+
+        .pc-prog-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: .7rem;
+            color: var(--text3);
+            margin-bottom: 5px;
+        }
+
+        .pc-bar {
+            height: 5px;
+            background: var(--bg3);
+            border-radius: 50px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .pc-fill {
+            height: 100%;
+            border-radius: 50px;
+        }
+
+        .pc-cta {
+            width: 100%;
+            padding: 9px;
+            border-radius: 10px;
+            background: var(--glass2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: .78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        .pc-cta:hover {
+            background: rgba(240, 165, 0, .1);
+            border-color: rgba(240, 165, 0, .3);
+            color: var(--gold);
+        }
+
+        /* ACHIEVEMENTS */
+        .achieve-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 0 20px;
+        }
+
+        .achieve-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 8px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        .achieve-item.unlocked {
+            border-color: rgba(240, 165, 0, .3);
+            background: rgba(240, 165, 0, .05);
+        }
+
+        .achieve-icon {
+            font-size: 1.6rem;
+            filter: grayscale(1) opacity(.4);
+            transition: .3s;
+        }
+
+        .achieve-item.unlocked .achieve-icon {
+            filter: none;
+        }
+
+        .achieve-label {
+            font-size: .6rem;
+            color: var(--text3);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .achieve-item.unlocked .achieve-label {
+            color: var(--gold2);
+        }
+
+        /* ══════════════════════════════════════
+   PAGE: PROFILE (پروفایل)
+══════════════════════════════════════ */
+        .profile-header {
+            margin: 20px 20px 0;
+            padding: 28px 24px;
+            border-radius: 24px;
+            background: linear-gradient(145deg, var(--bg2), var(--bg1));
+            border: 1px solid var(--border2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(240, 165, 0, .08), rgba(15, 212, 126, .05));
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, var(--gold), var(--emerald));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.6rem;
+            border: 3px solid rgba(240, 165, 0, .3);
+            box-shadow: 0 8px 30px rgba(240, 165, 0, .2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-name {
+            font-size: 1.2rem;
+            font-weight: 900;
+        }
+
+        .profile-handle {
+            font-size: .8rem;
+            color: var(--text3);
+        }
+
+        .profile-badges {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .p-badge {
+            font-size: .7rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 50px;
+            background: var(--glass2);
+            border: 1px solid var(--border2);
+            color: var(--text2);
+        }
+
+        .p-badge.gold {
+            background: rgba(240, 165, 0, .1);
+            border-color: rgba(240, 165, 0, .25);
+            color: var(--gold2);
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 0;
+            width: 100%;
+            background: var(--bg3);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .ps-item {
+            flex: 1;
+            padding: 12px 10px;
+            text-align: center;
+            border-left: 1px solid var(--border);
+        }
+
+        .ps-item:last-child {
+            border: none;
+        }
+
+        .ps-num {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--gold);
+        }
+
+        .ps-lbl {
+            font-size: .62rem;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        /* MENU LIST */
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 0 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border-radius: 16px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: .25s;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .menu-item:active {
+            transform: scale(.98);
+        }
+
+        .menu-item:hover {
+            border-color: var(--border2);
+            background: var(--glass2);
+        }
+
+        .mi-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .mi-text .mit {
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        .mi-text .mis {
+            font-size: .73rem;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        .mi-arrow {
+            margin-right: auto;
+            color: var(--text3);
+            font-size: .75rem;
+        }
+
+        /* ══════════════════════════════════════
+   PAGE: PAYMENTS (پارەدان)
+══════════════════════════════════════ */
+        .wallet-card {
+            margin: 20px;
+            padding: 28px 24px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, #1a120a, #0f1a10);
+            border: 1px solid rgba(240, 165, 0, .2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wallet-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(240, 165, 0, .1), transparent 70%);
+        }
+
+        .wallet-chip {
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--gold2);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-bottom: 12px;
+        }
+
+        .wallet-bal {
+            font-size: 2.4rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .wallet-bal span {
+            font-size: .9rem;
+            color: var(--text3);
+            font-weight: 400;
+        }
+
+        .wallet-sub {
+            font-size: .8rem;
+            color: var(--text2);
+            margin-bottom: 20px;
+        }
+
+        .wallet-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pay-method-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0 20px;
+        }
+
+        .pay-method-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: var(--glass);
+            border: 1.5px solid var(--border);
+            cursor: pointer;
+            transition: .25s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pay-method-item::after {
+            content: 'مامەڵەی دەکەین';
+            position: absolute;
+            left: 18px;
+            font-size: .65rem;
+            font-weight: 700;
+            color: var(--emerald);
+            opacity: 0;
+            transition: .3s;
+            transform: translateY(4px);
+        }
+
+        .pay-method-item:hover {
+            border-color: var(--border2);
+        }
+
+        .pay-method-item:hover::after {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pm-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .pm-info .pmt {
+            font-size: .92rem;
+            font-weight: 700;
+        }
+
+        .pm-info .pms {
+            font-size: .75rem;
+            color: var(--text2);
+            margin-top: 3px;
+        }
+
+        .pm-badge-wrap {
+            margin-right: auto;
+        }
+
+        .pm-badge {
+            font-size: .65rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(15, 212, 126, .1);
+            border: 1px solid rgba(15, 212, 126, .2);
+            color: var(--emerald);
+        }
+
+        /* Transaction */
+        .tx-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 0 20px;
+        }
+
+        .tx-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+        }
+
+        .tx-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .tx-info .txi {
+            font-size: .85rem;
+            font-weight: 600;
+        }
+
+        .tx-info .txs {
+            font-size: .72rem;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        .tx-amount {
+            margin-right: auto;
+            font-size: .92rem;
+            font-weight: 800;
+        }
+
+        .tx-amount.minus {
+            color: var(--rose);
+        }
+
+        .tx-amount.plus {
+            color: var(--emerald);
+        }
+
+        /* ══════════════════════════════════════
+   PAGE: SETTINGS (ڕێکخستن)
+══════════════════════════════════════ */
+        .settings-section-title {
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            padding: 20px 20px 8px;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-radius: 16px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            margin: 0 20px 8px;
+        }
+
+        .tr-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tr-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .tr-title {
+            font-size: .88rem;
+            font-weight: 600;
+        }
+
+        .tr-sub {
+            font-size: .72rem;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        .toggle {
+            width: 44px;
+            height: 26px;
+            border-radius: 13px;
+            background: var(--bg3);
+            border: 1px solid var(--border2);
+            position: relative;
+            cursor: pointer;
+            transition: .3s;
+            flex-shrink: 0;
+        }
+
+        .toggle.on {
+            background: var(--gold);
+            border-color: transparent;
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            transition: .3s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .3);
+        }
+
+        .toggle.on .toggle-knob {
+            right: auto;
+            left: 3px;
+        }
+
+        /* THEME PICKER */
+        .theme-picker {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px;
+        }
+
+        .theme-swatch {
+            flex: 1;
+            height: 52px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: .3s;
+            border: 2px solid transparent;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .72rem;
+            font-weight: 700;
+        }
+
+        .theme-swatch.active {
+            border-color: var(--gold);
+        }
+
+        .theme-swatch.active::after {
+            content: '✓';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            font-size: .7rem;
+            color: var(--gold);
+            font-weight: 900;
+        }
+
+        /* ══════════════════════════════════════
+   MODALS
+══════════════════════════════════════ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0, 0, 0, .7);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-sheet {
+            width: 100%;
+            max-width: 500px;
+            background: var(--bg1);
+            border-radius: 28px 28px 0 0;
+            border: 1px solid var(--border2);
+            border-bottom: none;
+            padding: 0 0 40px;
+            animation: sheetUp .35s cubic-bezier(.4, 0, .2, 1);
+            max-height: 85dvh;
+            overflow-y: auto;
+        }
+
+        @keyframes sheetUp {
+            from {
+                transform: translateY(100%)
+            }
+
+            to {
+                transform: translateY(0)
+            }
+        }
+
+        .modal-handle {
+            width: 36px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border2);
+            margin: 14px auto 20px;
+        }
+
+        .modal-head {
+            padding: 0 24px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+
+        .modal-sub {
+            font-size: .82rem;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-label {
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--text2);
+        }
+
+        .input-field {
+            padding: 13px 16px;
+            border-radius: 14px;
+            background: var(--bg2);
+            border: 1.5px solid var(--border2);
+            color: var(--text);
+            font-family: inherit;
+            font-size: .9rem;
+            outline: none;
+            transition: border-color .3s;
+            text-align: right;
+        }
+
+        .input-field:focus {
+            border-color: var(--gold);
+        }
+
+        .modal-actions {
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+        #toast {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            z-index: 3000;
+            opacity: 0;
+            pointer-events: none;
+            background: rgba(15, 22, 35, .96);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border2);
+            border-radius: 50px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .82rem;
+            font-weight: 600;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .5);
+            transition: opacity .3s, transform .3s;
+            white-space: nowrap;
+            max-width: 90vw;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ══════════════════════════════════════
+   SPACING HELPERS
+══════════════════════════════════════ */
+        .mt8 {
+            margin-top: 8px;
+        }
+
+        .mt12 {
+            margin-top: 12px;
+        }
+
+        .mt16 {
+            margin-top: 16px;
+        }
+
+        .mt20 {
+            margin-top: 20px;
+        }
+
+        .mt24 {
+            margin-top: 24px;
+        }
+
+        .gap-section {
+            height: 28px;
+        }
+
+        /* ══════════════════════════════════════
+   LIGHT THEME
+══════════════════════════════════════ */
+        body.light {
+            --bg: #f0f4fc;
+            --bg1: #e8edf8;
+            --bg2: #dde4f4;
+            --bg3: #d0d9ee;
+            --glass: rgba(255, 255, 255, 0.6);
+            --glass2: rgba(255, 255, 255, 0.8);
+            --border: rgba(0, 0, 0, .08);
+            --border2: rgba(0, 0, 0, .14);
+            --text: #0d1128;
+            --text2: #4a5472;
+            --text3: #8899aa;
+        }
+
+        body.light .status-bar {
+            background: rgba(240, 244, 252, .92);
+        }
+
+        body.light .bottom-nav {
+            background: rgba(232, 237, 248, .95);
+        }
+
+        /* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+        @media(min-width:520px) {
+            .hero-cta-row .btn {
+                flex: 1;
+            }
+
+            .explore-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .achieve-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+
+        @media(min-width:720px) {
+            body {
+                max-width: 430px;
+                margin: 0 auto;
+                border-left: 1px solid var(--border);
+                border-right: 1px solid var(--border);
+            }
+
+            body::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background: var(--bg);
+                z-index: -1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SPLASH -->
+    <div id="splash">
+        <div class="splash-logo-ring">📖</div>
+        <div class="splash-wordmark">KurdLearn</div>
+        <div class="splash-bar-wrap">
+            <div class="splash-bar-fill"></div>
+        </div>
+        <div class="splash-sub">چاوەڕوانبە، فێربوون دێتە ئامادەیی...</div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast"><span id="toast-icon">✓</span><span id="toast-msg"></span></div>
+
+    <!-- APP -->
+    <div id="app">
+
+        <!-- STATUS BAR -->
+        <div class="status-bar">
+            <div class="sb-logo">KurdLearn</div>
+            <div class="sb-actions">
+                <div class="sb-btn-wrap">
+                    <div class="sb-btn" onclick="openModal('notif-modal')">🔔
+                        <span class="sb-notif-dot"></span>
+                    </div>
+                </div>
+                <div class="sb-btn" onclick="openModal('auth-modal')">👤</div>
+            </div>
+        </div>
+
+        <!-- ═══ PAGE: HOME ═══ -->
+        <div class="page active" id="page-home">
+
+            <!-- HERO -->
+            <div class="hero-block">
+                <div class="hero-badge-row">
+                    <div class="live-dot"></div>
+                    <span class="live-text">١٠٬٠٠٠+ خوێندکاری چالاک ئێستا</span>
+                </div>
+                <div class="hero-h">
+                    یەکەم بازاڕی<br><span>فێربوونی ئۆنلاین</span><br>بۆ کوردستان
+                </div>
+                <div class="hero-p">فێربوون لە باشترین مامۆستایان — بە زمانی کوردی، بە نرخی گونجاو، لە هەر شوێنێک.</div>
+                <div class="hero-cta-row">
+                    <button class="btn btn-fill" onclick="nav('explore')">🚀 دەستپێبکە</button>
+                    <button class="btn btn-outline" onclick="openModal('instructor-modal')">👨‍🏫 ببە بە
+                        مامۆستا</button>
+                </div>
+            </div>
+
+            <!-- STATS STRIP -->
+            <div class="hero-stats-row">
+                <div class="hsr-item">
+                    <div class="hsr-num">١٠K+</div>
+                    <div class="hsr-lbl">خوێندکار</div>
+                </div>
+                <div class="hsr-item">
+                    <div class="hsr-num">٥٠٠+</div>
+                    <div class="hsr-lbl">کورس</div>
+                </div>
+                <div class="hsr-item">
+                    <div class="hsr-num">١٥٠+</div>
+                    <div class="hsr-lbl">مامۆستا</div>
+                </div>
+                <div class="hsr-item">
+                    <div class="hsr-num">٤.٩★</div>
+                    <div class="hsr-lbl">هەڵسەنگاندن</div>
+                </div>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="search-wrap mt16">
+                <span style="font-size:1rem;color:var(--text3)">🔍</span>
+                <input type="text" placeholder="دوای چی دەگەڕێی؟ بنوسە..." id="search-input">
+                <button class="search-btn" onclick="doSearch()">↵</button>
+            </div>
+
+            <!-- CATEGORIES CHIPS -->
+            <div class="section-pad mt8">
+                <div class="pill-label">کاتێگۆری</div>
+            </div>
+            <div class="scroll-row">
+                <div class="cat-chip active" onclick="chipActive(this)"><span class="ci">🌟</span>هەموو</div>
+                <div class="cat-chip" onclick="chipActive(this)"><span class="ci">💻</span>کۆد</div>
+                <div class="cat-chip" onclick="chipActive(this)"><span class="ci">🎨</span>دیزاین</div>
+                <div class="cat-chip" onclick="chipActive(this)"><span class="ci">🌐</span>زمان</div>
+                <div class="cat-chip" onclick="chipActive(this)"><span class="ci">📣</span>مارکێتینگ</div>
+                <div class="cat-chip" onclick="chipActive(this)"><span class="ci">💼</span>کاروبار</div>
+                <div class="cat-chip" onclick="chipActive(this)"><span class="ci">📸</span>وێنەسازی</div>
+                <div class="cat-chip" onclick="chipActive(this)"><span class="ci">👨‍🍳</span>ئاشپەزی</div>
+            </div>
+
+            <!-- FEATURE GRID -->
+            <div class="section-pad mt8">
+                <div class="pill-label">بوارەکان</div>
+                <div class="section-title">شاخازی زانست</div>
+            </div>
+            <div class="feature-grid">
+                <div class="feat-card card" style="background:linear-gradient(145deg,#0f1f38,#071528)"
+                    onclick="nav('explore')">
+                    <div class="feat-icon-lg">💻</div>
+                    <div class="feat-title">کۆمپیوتەر و کۆد</div>
+                    <div class="feat-count">١٤٨ کورس</div>
+                    <div class="feat-arrow">←</div>
+                </div>
+                <div class="feat-card card" style="background:linear-gradient(145deg,#1f0f38,#150728)"
+                    onclick="nav('explore')">
+                    <div class="feat-icon-lg">🎨</div>
+                    <div class="feat-title">گرافیک دیزاین</div>
+                    <div class="feat-count">٨٤ کورس</div>
+                    <div class="feat-arrow">←</div>
+                </div>
+                <div class="feat-card card" style="background:linear-gradient(145deg,#0f2a1a,#071810)"
+                    onclick="nav('explore')">
+                    <div class="feat-icon-lg">🌐</div>
+                    <div class="feat-title">زمانەکان</div>
+                    <div class="feat-count">٦٢ کورس</div>
+                    <div class="feat-arrow">←</div>
+                </div>
+                <div class="feat-card card" style="background:linear-gradient(145deg,#2a1a0a,#180e04)"
+                    onclick="nav('explore')">
+                    <div class="feat-icon-lg">💼</div>
+                    <div class="feat-title">کاروبار</div>
+                    <div class="feat-count">٧١ کورس</div>
+                    <div class="feat-arrow">←</div>
+                </div>
+            </div>
+
+            <!-- PROMO BANNER -->
+            <div class="promo-banner mt16" onclick="openModal('auth-modal')">
+                <div class="promo-text">
+                    <div class="promo-eyebrow">🎁 تەکلیفی تایبەت</div>
+                    <div class="promo-title">تۆماربە، ٣ ڕۆژی خۆڕایی وەربگرە</div>
+                    <div class="promo-desc">هیچ کارتێکت پێویست نییە — یەکسەر دەستپێبکە</div>
+                </div>
+                <div class="promo-badge">🎓</div>
+            </div>
+
+            <!-- WHY KURDLEARN -->
+            <div class="section-pad mt8">
+                <div class="pill-label">تایبەتمەندی</div>
+                <div class="section-title">بۆچی KurdLearn؟</div>
+            </div>
+            <div class="why-strip">
+                <div class="why-row">
+                    <div class="why-row-icon" style="background:rgba(240,165,0,.1)">🗣️</div>
+                    <div class="why-row-text">
+                        <div class="wrt">بە زمانی کوردی</div>
+                        <div class="wrs">هەموو ناوەڕۆک بە سۆرانی ڕوونکراوەتەوە</div>
+                    </div>
+                </div>
+                <div class="why-row">
+                    <div class="why-row-icon" style="background:rgba(15,212,126,.1)">💳</div>
+                    <div class="why-row-text">
+                        <div class="wrt">Zain Cash و FIB</div>
+                        <div class="wrs">پارەدانی ئاسان و خێرا بۆ کوردستان</div>
+                    </div>
+                </div>
+                <div class="why-row">
+                    <div class="why-row-icon" style="background:rgba(56,200,248,.1)">🏅</div>
+                    <div class="why-row-text">
+                        <div class="wrt">بڕوانامەی پشتڕاستکراو</div>
+                        <div class="wrs">بڕوانامەی دیجیتاڵ لەگەڵ QR کۆدی تایبەت</div>
+                    </div>
+                </div>
+                <div class="why-row">
+                    <div class="why-row-icon" style="background:rgba(182,154,255,.1)">📶</div>
+                    <div class="why-row-text">
+                        <div class="wrt">گەڕانی ئۆفلاین</div>
+                        <div class="wrs">وانەکانت دابەزێنە، ئۆفلاین فێربوو</div>
+                    </div>
+                </div>
+                <div class="why-row">
+                    <div class="why-row-icon" style="background:rgba(255,99,122,.1)">🎯</div>
+                    <div class="why-row-text">
+                        <div class="wrt">نرخی گونجاو</div>
+                        <div class="wrs">بۆ بەرپرسیارێتی ئابووری کوردستان دیاریکراوە</div>
+                    </div>
+                </div>
+                <div class="why-row">
+                    <div class="why-row-icon" style="background:rgba(240,165,0,.1)">✅</div>
+                    <div class="why-row-text">
+                        <div class="wrt">مامۆستای پشتڕاستکراو</div>
+                        <div class="wrs">هەموو مامۆستایەک دەستکاری تیم KurdLearn دەبێت</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAYMENT METHODS -->
+            <div class="section-pad mt8">
+                <div class="pill-label">پارەدان</div>
+                <div class="section-title">ئامرازەکانی پارەدان</div>
+            </div>
+            <div class="hscroll">
+                <div class="card" style="flex-shrink:0;width:150px;padding:20px;text-align:center;cursor:pointer"
+                    onclick="nav('payments')">
+                    <div style="font-size:2.2rem;margin-bottom:8px">📱</div>
+                    <div style="font-size:.85rem;font-weight:800;margin-bottom:3px">Zain Cash</div>
+                    <div style="font-size:.68rem;color:var(--emerald)">● چالاک</div>
+                </div>
+                <div class="card" style="flex-shrink:0;width:150px;padding:20px;text-align:center;cursor:pointer"
+                    onclick="nav('payments')">
+                    <div style="font-size:2.2rem;margin-bottom:8px">🏦</div>
+                    <div style="font-size:.85rem;font-weight:800;margin-bottom:3px">FIB</div>
+                    <div style="font-size:.68rem;color:var(--emerald)">● چالاک</div>
+                </div>
+                <div class="card" style="flex-shrink:0;width:150px;padding:20px;text-align:center;cursor:pointer"
+                    onclick="nav('payments')">
+                    <div style="font-size:2.2rem;margin-bottom:8px">💸</div>
+                    <div style="font-size:.85rem;font-weight:800;margin-bottom:3px">Asia Hawala</div>
+                    <div style="font-size:.68rem;color:var(--emerald)">● چالاک</div>
+                </div>
+                <div class="card" style="flex-shrink:0;width:150px;padding:20px;text-align:center;cursor:pointer"
+                    onclick="nav('payments')">
+                    <div style="font-size:2.2rem;margin-bottom:8px">💳</div>
+                    <div style="font-size:.85rem;font-weight:800;margin-bottom:3px">کارتی کرێدیت</div>
+                    <div style="font-size:.68rem;color:var(--emerald)">● چالاک</div>
+                </div>
+            </div>
+
+            <!-- TESTIMONIALS -->
+            <div class="section-pad mt8">
+                <div class="pill-label">بەڵگەکان</div>
+                <div class="section-title">خوێندکارەکانمان دەڵێن</div>
+            </div>
+            <div class="hscroll">
+                <div class="card" style="flex-shrink:0;width:260px;padding:20px">
+                    <div
+                        style="font-size:1.8rem;color:var(--gold);opacity:.5;font-family:serif;line-height:1;margin-bottom:8px">
+                        "</div>
+                    <div style="font-size:.82rem;color:var(--text2);line-height:1.7;margin-bottom:14px">KurdLearn ژیانم
+                        بە تەواوی گۆڕی. پێش یەک ساڵ HTML نەزانم، ئێستا فری‌لانسەرم و مانگانە ١٫٥ ملیۆن دینار دەکەم.
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <div
+                            style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#e8950f);display:flex;align-items:center;justify-content:center;font-size:1.1rem">
+                            🧑</div>
+                        <div>
+                            <div style="font-size:.85rem;font-weight:700">ئارەزوو حەمید</div>
+                            <div style="font-size:.68rem;color:var(--text3)">فری‌لانسەر — هەولێر</div>
+                        </div>
+                        <div style="margin-right:auto;font-size:.75rem;color:var(--gold2)">★★★★★</div>
+                    </div>
+                </div>
+                <div class="card" style="flex-shrink:0;width:260px;padding:20px">
+                    <div
+                        style="font-size:1.8rem;color:var(--gold);opacity:.5;font-family:serif;line-height:1;margin-bottom:8px">
+                        "</div>
+                    <div style="font-size:.82rem;color:var(--text2);line-height:1.7;margin-bottom:14px">کورسی Photoshop
+                        باشترین کورسی ئۆنلاینی خوێندووم. شێوازی بە کوردی ئاسان و جوانە. ئێستا UI دیزاینەرم لە سلێمانی.
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <div
+                            style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--violet),var(--sky));display:flex;align-items:center;justify-content:center;font-size:1.1rem">
+                            👩</div>
+                        <div>
+                            <div style="font-size:.85rem;font-weight:700">دیلنیا کەریم</div>
+                            <div style="font-size:.68rem;color:var(--text3)">UI دیزاینەر — سلێمانی</div>
+                        </div>
+                        <div style="margin-right:auto;font-size:.75rem;color:var(--gold2)">★★★★★</div>
+                    </div>
+                </div>
+                <div class="card" style="flex-shrink:0;width:260px;padding:20px">
+                    <div
+                        style="font-size:1.8rem;color:var(--gold);opacity:.5;font-family:serif;line-height:1;margin-bottom:8px">
+                        "</div>
+                    <div style="font-size:.82rem;color:var(--text2);line-height:1.7;margin-bottom:14px">دوای ٦ مانگ
+                        فێربوون لە KurdLearn، IELTS من ٦.٥ گرتم. ئەمە بەبێ فێرگای تایبەتی. زۆر سپاس!</div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <div
+                            style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--emerald),var(--sky));display:flex;align-items:center;justify-content:center;font-size:1.1rem">
+                            🧑</div>
+                        <div>
+                            <div style="font-size:.85rem;font-weight:700">ئاکۆ مستەفا</div>
+                            <div style="font-size:.68rem;color:var(--text3)">خوێندکار — دهۆک</div>
+                        </div>
+                        <div style="margin-right:auto;font-size:.75rem;color:var(--gold2)">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="section-pad mt8">
+                <div class="pill-label">پرسیار</div>
+                <div class="section-title">پرسیارە باوەکان</div>
+            </div>
+            <div style="padding:0 20px;display:flex;flex-direction:column;gap:8px">
+                <div class="faq-item card" onclick="toggleFaq(this)">
+                    <div
+                        style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;font-size:.9rem;font-weight:700;gap:12px">
+                        <span>چۆن کورس بکڕم؟</span>
+                        <span class="faq-ic"
+                            style="width:26px;height:26px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--text3);transition:.3s;flex-shrink:0">+</span>
+                    </div>
+                    <div class="faq-ans"
+                        style="max-height:0;overflow:hidden;transition:.4s;font-size:.84rem;color:var(--text2);line-height:1.7;padding:0 18px">
+                        کورسی دڵخوازت هەڵبژێرە، دەکرتنەوە بکە، ئامرازی پارەدانی خۆت دیاری بکە (Zain Cash، FIB، کارتی
+                        کرێدیت)، دوای پارەدان کورسەکە یەکسەر دەکەوێتە دەسترسیت.</div>
+                </div>
+                <div class="faq-item card" onclick="toggleFaq(this)">
+                    <div
+                        style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;font-size:.9rem;font-weight:700;gap:12px">
+                        <span>چۆن بەرپرسی مامۆستا بم؟</span>
+                        <span class="faq-ic"
+                            style="width:26px;height:26px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--text3);transition:.3s;flex-shrink:0">+</span>
+                    </div>
+                    <div class="faq-ans"
+                        style="max-height:0;overflow:hidden;transition:.4s;font-size:.84rem;color:var(--text2);line-height:1.7;padding:0 18px">
+                        فۆرمی مامۆستاکانمان پڕبکەرەوە، تیمەکەمان لە ماوەی ٤٨ کاژێر پەیوەندیت پێوە دەکات. دوای
+                        پشتڕاستکردنەوە، ٧٠٪ی هاتوومەرجی هەر کورس وەردەگریت.</div>
+                </div>
+                <div class="faq-item card" onclick="toggleFaq(this)">
+                    <div
+                        style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;font-size:.9rem;font-weight:700;gap:12px">
+                        <span>ئایا بڕوانامە دەدرێت؟</span>
+                        <span class="faq-ic"
+                            style="width:26px;height:26px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--text3);transition:.3s;flex-shrink:0">+</span>
+                    </div>
+                    <div class="faq-ans"
+                        style="max-height:0;overflow:hidden;transition:.4s;font-size:.84rem;color:var(--text2);line-height:1.7;padding:0 18px">
+                        بەڵێ! دوای تەواوکردنی کورس، بڕوانامەی دیجیتاڵی QR-پشتڕاستکراو وەردەگریت. دەتوانیت لە LinkedIn و
+                        CV بپارێزی.</div>
+                </div>
+                <div class="faq-item card" onclick="toggleFaq(this)">
+                    <div
+                        style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;font-size:.9rem;font-weight:700;gap:12px">
+                        <span>ئایا گەڕانی پارە هەیە؟</span>
+                        <span class="faq-ic"
+                            style="width:26px;height:26px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--text3);transition:.3s;flex-shrink:0">+</span>
+                    </div>
+                    <div class="faq-ans"
+                        style="max-height:0;overflow:hidden;transition:.4s;font-size:.84rem;color:var(--text2);line-height:1.7;padding:0 18px">
+                        بەڵێ، ٣٠ ڕۆژی گەڕانی پارەمان هەیە. ئەگەر رازی نەبوی پارەکەت دەگەڕێنینەوە — بێ پرسیار.</div>
+                </div>
+            </div>
+
+            <div class="gap-section"></div>
+        </div>
+
+        <!-- ═══ PAGE: EXPLORE ═══ -->
+        <div class="page" id="page-explore">
+            <div class="section-pad">
+                <div class="pill-label">کشف</div>
+                <div class="section-title">گەڕان و کشف</div>
+                <div class="section-sub">هەموو بوار و جۆرەکانی فێربوون ببینە</div>
+            </div>
+
+            <div class="search-wrap" style="margin:0 20px">
+                <span style="font-size:1rem;color:var(--text3)">🔍</span>
+                <input type="text" placeholder="ناوی کورس، بوار، زمان...">
+                <button class="search-btn">↵</button>
+            </div>
+
+            <div class="section-pad mt12">
+                <div class="pill-label">بوارەکان</div>
+            </div>
+            <div class="explore-chips">
+                <div class="explore-chip active" onclick="chipActive(this)">هەموو</div>
+                <div class="explore-chip" onclick="chipActive(this)">💻 کۆد</div>
+                <div class="explore-chip" onclick="chipActive(this)">🎨 دیزاین</div>
+                <div class="explore-chip" onclick="chipActive(this)">🌐 زمان</div>
+                <div class="explore-chip" onclick="chipActive(this)">📣 مارکێتینگ</div>
+                <div class="explore-chip" onclick="chipActive(this)">💼 کاروبار</div>
+                <div class="explore-chip" onclick="chipActive(this)">📸 وێنەسازی</div>
+            </div>
+
+            <div class="section-pad mt12">
+                <div class="pill-label">باشترین</div>
+                <div class="section-title">کورسە داواکراوەکان</div>
+            </div>
+            <div class="explore-grid">
+                <div class="explore-card" onclick="openModal('course-modal')">
+                    <div class="ec-thumb" style="background:linear-gradient(135deg,#0f1f38,#071020)">
+                        <span>🌐</span>
+                        <div class="ec-thumb-bg"></div>
+                    </div>
+                    <div class="ec-body">
+                        <div class="ec-cat">تەکنەلۆژیا</div>
+                        <div class="ec-title">HTML لە بنەڕەتەوە تا پیشەیی</div>
+                        <div class="ec-meta">
+                            <div class="ec-rating">★ ٤.٩</div>
+                            <div class="ec-price">٧٥K</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="explore-card" onclick="openModal('course-modal')">
+                    <div class="ec-thumb" style="background:linear-gradient(135deg,#1f0f30,#120720)">
+                        <span>🎨</span>
+                        <div class="ec-thumb-bg"></div>
+                    </div>
+                    <div class="ec-body">
+                        <div class="ec-cat">دیزاین</div>
+                        <div class="ec-title">Photoshop مستەر</div>
+                        <div class="ec-meta">
+                            <div class="ec-rating">★ ٤.٨</div>
+                            <div class="ec-price">٩٠K</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="explore-card" onclick="openModal('course-modal')">
+                    <div class="ec-thumb" style="background:linear-gradient(135deg,#0f2a1a,#071510)">
+                        <span>🇬🇧</span>
+                        <div class="ec-thumb-bg"></div>
+                    </div>
+                    <div class="ec-body">
+                        <div class="ec-cat">زمان</div>
+                        <div class="ec-title">ئینگلیزی A1-C2</div>
+                        <div class="ec-meta">
+                            <div class="ec-rating">★ ٤.٧</div>
+                            <div class="ec-price">١٢٥K</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="explore-card" onclick="openModal('course-modal')">
+                    <div class="ec-thumb" style="background:linear-gradient(135deg,#2a1a0a,#180e05)">
+                        <span>⚛️</span>
+                        <div class="ec-thumb-bg"></div>
+                    </div>
+                    <div class="ec-body">
+                        <div class="ec-cat">تەکنەلۆژیا</div>
+                        <div class="ec-title">React.js مۆدێرن</div>
+                        <div class="ec-meta">
+                            <div class="ec-rating">★ ٤.٩</div>
+                            <div class="ec-price">١١٠K</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="explore-card" onclick="openModal('course-modal')">
+                    <div class="ec-thumb" style="background:linear-gradient(135deg,#1a1030,#0e0820)">
+                        <span>📸</span>
+                        <div class="ec-thumb-bg"></div>
+                    </div>
+                    <div class="ec-body">
+                        <div class="ec-cat">وێنەسازی</div>
+                        <div class="ec-title">وێنەسازی پیشەیی</div>
+                        <div class="ec-meta">
+                            <div class="ec-rating">★ ٤.٦</div>
+                            <div class="ec-price">٨٥K</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="explore-card" onclick="openModal('course-modal')">
+                    <div class="ec-thumb" style="background:linear-gradient(135deg,#102a1a,#071510)">
+                        <span>📊</span>
+                        <div class="ec-thumb-bg"></div>
+                    </div>
+                    <div class="ec-body">
+                        <div class="ec-cat">کاروبار</div>
+                        <div class="ec-title">بزنسی خۆت دەست پێبکە</div>
+                        <div class="ec-meta">
+                            <div class="ec-rating">★ ٥.٠</div>
+                            <div class="ec-price">١٥٠K</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-pad mt12">
+                <div class="pill-label">نوێ</div>
+                <div class="section-title">کورسە نوێکان</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+                <div class="explore-card-full" onclick="openModal('course-modal')">
+                    <div class="ecf-thumb" style="background:linear-gradient(135deg,#1a200f,#0e1408)">🐍</div>
+                    <div class="ecf-body">
+                        <div class="ecf-cat">تەکنەلۆژیا</div>
+                        <div class="ecf-title">Python بۆ داتا ئەنالیسیس — لە بنەڕەتەوە</div>
+                        <div class="ecf-bottom">
+                            <div class="ecf-price">١٣٠K دینار</div>
+                            <div class="ecf-rating">★ ٤.٨ · ٣٢١ خوێندکار</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="explore-card-full" onclick="openModal('course-modal')">
+                    <div class="ecf-thumb" style="background:linear-gradient(135deg,#20100a,#140805)">🎬</div>
+                    <div class="ecf-body">
+                        <div class="ecf-cat">ویدیۆ و میدیا</div>
+                        <div class="ecf-title">ئەدیتکردنی ویدیۆ بە Premiere Pro</div>
+                        <div class="ecf-bottom">
+                            <div class="ecf-price">١٠٠K دینار</div>
+                            <div class="ecf-rating">★ ٤.٧ · ٢٨٩ خوێندکار</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="explore-card-full" onclick="openModal('course-modal')">
+                    <div class="ecf-thumb" style="background:linear-gradient(135deg,#0a1a25,#050e14)">📱</div>
+                    <div class="ecf-body">
+                        <div class="ecf-cat">تەکنەلۆژیا</div>
+                        <div class="ecf-title">دروستکردنی ئاپی موبایل بە Flutter</div>
+                        <div class="ecf-bottom">
+                            <div class="ecf-price">١٦٠K دینار</div>
+                            <div class="ecf-rating">★ ٤.٩ · ١٧٤ خوێندکار</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="gap-section"></div>
+        </div>
+
+        <!-- ═══ PAGE: MY LEARNING ═══ -->
+        <div class="page" id="page-learn">
+            <!-- User greeting -->
+            <div class="learn-hero">
+                <div class="learn-avatar">🎓</div>
+                <div class="learn-greet">
+                    <div class="lg-hi">بەخێربێی دەگەڕێیتەوە،</div>
+                    <div class="lg-name">ئارەزوو حەمید</div>
+                    <div class="lg-streak">🔥 <span>١٤ ڕۆژی لیستی ئەوپەر</span></div>
+                </div>
+            </div>
+
+            <!-- XP BAR -->
+            <div class="xp-bar-wrap mt16">
+                <div class="xp-row">
+                    <span>پلەی من: <strong style="color:var(--gold)">٣ — فێربێژ</strong></span>
+                    <span>١٢٤٠ / ٢٠٠٠ XP</span>
+                </div>
+                <div class="xp-bar">
+                    <div class="xp-fill" style="width:62%" id="xp-fill-bar"></div>
+                </div>
+                <div class="xp-milestones">
+                    <span class="xp-ms">0</span>
+                    <span class="xp-ms">٥٠٠</span>
+                    <span class="xp-ms">١٠٠٠</span>
+                    <span class="xp-ms">١٥٠٠</span>
+                    <span class="xp-ms">٢٠٠٠</span>
+                </div>
+            </div>
+
+            <!-- IN-PROGRESS COURSES -->
+            <div class="section-pad mt8">
+                <div class="pill-label">بەردەوامبوون</div>
+                <div class="section-title">کورسەکانم</div>
+            </div>
+            <div class="hscroll">
+                <div class="prog-card">
+                    <div class="pc-thumb" style="background:linear-gradient(135deg,#0f1f38,#071020)">🌐</div>
+                    <div class="pc-body">
+                        <div class="pc-title">HTML لە بنەڕەتەوە تا پیشەیی</div>
+                        <div class="pc-prog-row"><span>پێشکەوتن</span><span>٦٨٪</span></div>
+                        <div class="pc-bar">
+                            <div class="pc-fill"
+                                style="width:68%;background:linear-gradient(90deg,var(--gold),var(--gold2))"></div>
+                        </div>
+                        <button class="pc-cta">▶ بەردەوام بە</button>
+                    </div>
+                </div>
+                <div class="prog-card">
+                    <div class="pc-thumb" style="background:linear-gradient(135deg,#1f0f30,#120720)">🎨</div>
+                    <div class="pc-body">
+                        <div class="pc-title">Photoshop مستەر — شێرین ڕەشید</div>
+                        <div class="pc-prog-row"><span>پێشکەوتن</span><span>٣٢٪</span></div>
+                        <div class="pc-bar">
+                            <div class="pc-fill"
+                                style="width:32%;background:linear-gradient(90deg,var(--violet),var(--sky))"></div>
+                        </div>
+                        <button class="pc-cta">▶ بەردەوام بە</button>
+                    </div>
+                </div>
+                <div class="prog-card">
+                    <div class="pc-thumb" style="background:linear-gradient(135deg,#0f2a1a,#071510)">🇬🇧</div>
+                    <div class="pc-body">
+                        <div class="pc-title">زمانی ئینگلیزی — نەرمین جەلال</div>
+                        <div class="pc-prog-row"><span>پێشکەوتن</span><span>٩٥٪</span></div>
+                        <div class="pc-bar">
+                            <div class="pc-fill"
+                                style="width:95%;background:linear-gradient(90deg,var(--emerald),var(--sky))"></div>
+                        </div>
+                        <button class="pc-cta"
+                            style="background:rgba(15,212,126,.1);border-color:rgba(15,212,126,.3);color:var(--emerald)">✓
+                            نزیکی تەواوبوون</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACHIEVEMENTS -->
+            <div class="section-pad mt8">
+                <div class="pill-label">دەستکەوت</div>
+                <div class="section-title">دەستکەوتەکانم</div>
+            </div>
+            <div class="achieve-grid">
+                <div class="achieve-item unlocked">
+                    <div class="achieve-icon">🚀</div>
+                    <div class="achieve-label">دەستپێکار</div>
+                </div>
+                <div class="achieve-item unlocked">
+                    <div class="achieve-icon">🔥</div>
+                    <div class="achieve-label">١٤ ڕۆژ</div>
+                </div>
+                <div class="achieve-item unlocked">
+                    <div class="achieve-icon">📚</div>
+                    <div class="achieve-label">٣ کورس</div>
+                </div>
+                <div class="achieve-item">
+                    <div class="achieve-icon">🏆</div>
+                    <div class="achieve-label">مستەر</div>
+                </div>
+                <div class="achieve-item">
+                    <div class="achieve-icon">💎</div>
+                    <div class="achieve-label">VIP</div>
+                </div>
+                <div class="achieve-item unlocked">
+                    <div class="achieve-icon">⭐</div>
+                    <div class="achieve-label">ستێر</div>
+                </div>
+                <div class="achieve-item">
+                    <div class="achieve-icon">🎯</div>
+                    <div class="achieve-label">هەدەف</div>
+                </div>
+                <div class="achieve-item">
+                    <div class="achieve-icon">🌟</div>
+                    <div class="achieve-label">لیجەند</div>
+                </div>
+            </div>
+
+            <!-- CERTIFICATES -->
+            <div class="section-pad mt8">
+                <div class="pill-label">بڕوانامە</div>
+                <div class="section-title">بڕوانامەکانم</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;padding:0 20px">
+                <div class="card" style="padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer"
+                    onclick="toast('بڕوانامەکە دابەزاند! ✓','✅')">
+                    <div
+                        style="width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--gold),#d48c00);display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 4px 16px rgba(240,165,0,.3)">
+                        🏅</div>
+                    <div style="flex:1">
+                        <div style="font-size:.9rem;font-weight:700">زمانی ئینگلیزی — A1 تا A2</div>
+                        <div style="font-size:.72rem;color:var(--text3);margin-top:3px">دابەزاندراو ٢٠٢٤/١١/٢٣</div>
+                    </div>
+                    <div style="font-size:.75rem;color:var(--gold)">↓ دابەزاندن</div>
+                </div>
+                <div class="card"
+                    style="padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;opacity:.5">
+                    <div
+                        style="width:46px;height:46px;border-radius:14px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:1.3rem">
+                        🔒</div>
+                    <div>
+                        <div style="font-size:.9rem;font-weight:700">HTML — تەواوکردن پێویستە</div>
+                        <div style="font-size:.72rem;color:var(--text3);margin-top:3px">٦٨٪ تەواوبووە — بەردەوام بە
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="gap-section"></div>
+        </div>
+
+        <!-- ═══ PAGE: PAYMENTS ═══ -->
+        <div class="page" id="page-payments">
+            <!-- WALLET -->
+            <div class="wallet-card">
+                <div class="wallet-chip">💳 جزدانی KurdLearn</div>
+                <div class="wallet-bal">١٥٠٬٠٠٠ <span>IQD</span></div>
+                <div class="wallet-sub">کرێدیتی بەردەست بۆ کڕینی کورس</div>
+                <div class="wallet-actions">
+                    <button class="btn btn-fill" onclick="openModal('topup-modal')">+ زیادکردن</button>
+                    <button class="btn btn-ghost" onclick="toast('مێژووی مامەڵە بزانە...','📋')">مێژوو</button>
+                </div>
+            </div>
+
+            <!-- PAYMENT METHODS -->
+            <div class="section-pad mt8">
+                <div class="pill-label">ئامراز</div>
+                <div class="section-title">ئامرازەکانی پارەدان</div>
+            </div>
+            <div class="pay-method-list">
+                <div class="pay-method-item" onclick="openModal('topup-modal')">
+                    <div class="pm-logo" style="background:rgba(22,163,74,.1)">📱</div>
+                    <div class="pm-info">
+                        <div class="pmt">Zain Cash</div>
+                        <div class="pms">پارەدانی خێرا بە موبایل — ئەستێر زەینکاش</div>
+                    </div>
+                    <div class="pm-badge-wrap">
+                        <div class="pm-badge">چالاک</div>
+                    </div>
+                </div>
+                <div class="pay-method-item" onclick="openModal('topup-modal')">
+                    <div class="pm-logo" style="background:rgba(56,200,248,.1)">🏦</div>
+                    <div class="pm-info">
+                        <div class="pmt">FIB — First Iraqi Bank</div>
+                        <div class="pms">بانکی دیجیتاڵی کوردستان و عێراق</div>
+                    </div>
+                    <div class="pm-badge-wrap">
+                        <div class="pm-badge">چالاک</div>
+                    </div>
+                </div>
+                <div class="pay-method-item" onclick="openModal('topup-modal')">
+                    <div class="pm-logo" style="background:rgba(240,165,0,.1)">💸</div>
+                    <div class="pm-info">
+                        <div class="pmt">Asia Hawala</div>
+                        <div class="pms">گواستنەوەی پارە لە هەر شوێنێک</div>
+                    </div>
+                    <div class="pm-badge-wrap">
+                        <div class="pm-badge">چالاک</div>
+                    </div>
+                </div>
+                <div class="pay-method-item" onclick="openModal('topup-modal')">
+                    <div class="pm-logo" style="background:rgba(99,102,241,.1)">💳</div>
+                    <div class="pm-info">
+                        <div class="pmt">Visa / Mastercard</div>
+                        <div class="pms">کارتی کرێدیت و دێبیت نێودەوڵەتی</div>
+                    </div>
+                    <div class="pm-badge-wrap">
+                        <div class="pm-badge">چالاک</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRANSACTIONS -->
+            <div class="section-pad mt8">
+                <div class="pill-label">مامەڵەکان</div>
+                <div class="section-title">مێژووی مامەڵە</div>
+            </div>
+            <div class="tx-list">
+                <div class="tx-item">
+                    <div class="tx-icon" style="background:rgba(255,99,122,.1)">📖</div>
+                    <div class="tx-info">
+                        <div class="txi">کڕینی کورس — HTML</div>
+                        <div class="txs">٢٠٢٤/١١/٢٠ · Zain Cash</div>
+                    </div>
+                    <div class="tx-amount minus">− ٧٥٬٠٠٠</div>
+                </div>
+                <div class="tx-item">
+                    <div class="tx-icon" style="background:rgba(15,212,126,.1)">💰</div>
+                    <div class="tx-info">
+                        <div class="txi">پڕکردنەوەی جزدان</div>
+                        <div class="txs">٢٠٢٤/١١/١٨ · FIB</div>
+                    </div>
+                    <div class="tx-amount plus">+ ٢٥٠٬٠٠٠</div>
+                </div>
+                <div class="tx-item">
+                    <div class="tx-icon" style="background:rgba(255,99,122,.1)">📖</div>
+                    <div class="tx-info">
+                        <div class="txi">کڕینی کورس — ئینگلیزی</div>
+                        <div class="txs">٢٠٢٤/١١/٥ · Visa</div>
+                    </div>
+                    <div class="tx-amount minus">− ١٢٥٬٠٠٠</div>
+                </div>
+                <div class="tx-item">
+                    <div class="tx-icon" style="background:rgba(15,212,126,.1)">💰</div>
+                    <div class="tx-info">
+                        <div class="txi">پڕکردنەوەی جزدان</div>
+                        <div class="txs">٢٠٢٤/١٠/٣٠ · Asia Hawala</div>
+                    </div>
+                    <div class="tx-amount plus">+ ٥٠٠٬٠٠٠</div>
+                </div>
+            </div>
+            <div class="gap-section"></div>
+        </div>
+
+        <!-- ═══ PAGE: PROFILE ═══ -->
+        <div class="page" id="page-profile">
+            <div class="profile-header">
+                <div class="profile-avatar">🎓</div>
+                <div class="profile-name">ئارەزوو حەمید</div>
+                <div class="profile-handle">@arezoo.hamid · هەولێر، کوردستان</div>
+                <div class="profile-badges">
+                    <span class="p-badge gold">⭐ فێربێژ</span>
+                    <span class="p-badge">🔥 ١٤ ڕۆژ</span>
+                    <span class="p-badge">🎓 ٣ بڕوانامە</span>
+                </div>
+                <div class="profile-stats">
+                    <div class="ps-item">
+                        <div class="ps-num">١٢</div>
+                        <div class="ps-lbl">کورس</div>
+                    </div>
+                    <div class="ps-item">
+                        <div class="ps-num">١٢٤٠</div>
+                        <div class="ps-lbl">XP</div>
+                    </div>
+                    <div class="ps-item">
+                        <div class="ps-num">١٤</div>
+                        <div class="ps-lbl">ڕۆژ</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section-title">ئەژمێر</div>
+            <div class="menu-list">
+                <div class="menu-item" onclick="openModal('auth-modal')">
+                    <div class="mi-icon" style="background:rgba(240,165,0,.1)">✏️</div>
+                    <div class="mi-text">
+                        <div class="mit">دەستکاریکردنی پروفایل</div>
+                        <div class="mis">ناو، وێنە، بایۆگرافی</div>
+                    </div>
+                    <div class="mi-arrow">←</div>
+                </div>
+                <div class="menu-item" onclick="toast('بڕوانامەکانت بزانە...','🏅')">
+                    <div class="mi-icon" style="background:rgba(15,212,126,.1)">🏅</div>
+                    <div class="mi-text">
+                        <div class="mit">بڕوانامەکانم</div>
+                        <div class="mis">٣ بڕوانامەی پشتڕاستکراو</div>
+                    </div>
+                    <div class="mi-arrow">←</div>
+                </div>
+                <div class="menu-item" onclick="nav('learn')">
+                    <div class="mi-icon" style="background:rgba(56,200,248,.1)">📚</div>
+                    <div class="mi-text">
+                        <div class="mit">فێربوونەکانم</div>
+                        <div class="mis">٣ کورسی چالاک</div>
+                    </div>
+                    <div class="mi-arrow">←</div>
+                </div>
+                <div class="menu-item" onclick="nav('payments')">
+                    <div class="mi-icon" style="background:rgba(182,154,255,.1)">💳</div>
+                    <div class="mi-text">
+                        <div class="mit">پارەدان و جزدان</div>
+                        <div class="mis">١٥٠٬٠٠٠ IQD</div>
+                    </div>
+                    <div class="mi-arrow">←</div>
+                </div>
+                <div class="menu-item" onclick="openModal('instructor-modal')">
+                    <div class="mi-icon" style="background:rgba(240,165,0,.1)">👨‍🏫</div>
+                    <div class="mi-text">
+                        <div class="mit">بە مامۆستا بگەڕێ</div>
+                        <div class="mis">زانستەکانت بەکاربهێنە، پارە وەربگرە</div>
+                    </div>
+                    <div class="mi-arrow">←</div>
+                </div>
+            </div>
+
+            <div class="settings-section-title">ڕێکخستن</div>
+            <div style="padding:0 20px;display:flex;flex-direction:column;gap:8px">
+                <div class="toggle-row">
+                    <div class="tr-left">
+                        <div class="tr-icon" style="background:rgba(240,165,0,.1)">🌙</div>
+                        <div>
+                            <div class="tr-title">شێوازی تاریک</div>
+                            <div class="tr-sub">ڕووکاری تاریک</div>
+                        </div>
+                    </div>
+                    <div class="toggle on" id="dark-toggle" onclick="toggleDark(this)">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+                <div class="toggle-row">
+                    <div class="tr-left">
+                        <div class="tr-icon" style="background:rgba(15,212,126,.1)">🔔</div>
+                        <div>
+                            <div class="tr-title">ئاگادارکردنەوەکان</div>
+                            <div class="tr-sub">ئاگادارکردنی کورس و نوێکاری</div>
+                        </div>
+                    </div>
+                    <div class="toggle on" onclick="toggleItem(this)">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+                <div class="toggle-row">
+                    <div class="tr-left">
+                        <div class="tr-icon" style="background:rgba(56,200,248,.1)">📶</div>
+                        <div>
+                            <div class="tr-title">گەڕانی ئۆفلاین</div>
+                            <div class="tr-sub">وانەکان دابەزێنە</div>
+                        </div>
+                    </div>
+                    <div class="toggle" onclick="toggleItem(this)">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+                <div class="toggle-row">
+                    <div class="tr-left">
+                        <div class="tr-icon" style="background:rgba(182,154,255,.1)">🌐</div>
+                        <div>
+                            <div class="tr-title">زمانی ئینگلیزی</div>
+                            <div class="tr-sub">گۆڕین بۆ ئینگلیزی</div>
+                        </div>
+                    </div>
+                    <div class="toggle" onclick="toggleItem(this)">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section-title">سیستەم</div>
+            <div class="menu-list">
+                <div class="menu-item" onclick="toast('شاریکردنی کۆد...','🔗')">
+                    <div class="mi-icon" style="background:rgba(240,165,0,.1)">🎁</div>
+                    <div class="mi-text">
+                        <div class="mit">بانگهێشتکردنی هاوڕێ</div>
+                        <div class="mis">بانگهێشت بکە، کرێدیت وەربگرە</div>
+                    </div>
+                    <div class="mi-arrow">←</div>
+                </div>
+                <div class="menu-item" onclick="toast('پەیوەندی کراو...','📞')">
+                    <div class="mi-icon" style="background:rgba(56,200,248,.1)">💬</div>
+                    <div class="mi-text">
+                        <div class="mit">پشتیوانی ٢٤/٧</div>
+                        <div class="mis">پشتیوانی بە کوردی</div>
+                    </div>
+                    <div class="mi-arrow">←</div>
+                </div>
+                <div class="menu-item" onclick="toast('چوونەدەرەوە...','👋')" style="color:var(--rose)">
+                    <div class="mi-icon" style="background:rgba(255,99,122,.1)">🚪</div>
+                    <div class="mi-text">
+                        <div class="mit" style="color:var(--rose)">چوونەدەرەوە</div>
+                        <div class="mis">دەرچوون لە ئەژمێر</div>
+                    </div>
+                </div>
+            </div>
+            <div class="gap-section"></div>
+        </div>
+
+        <!-- BOTTOM NAV -->
+        <nav class="bottom-nav" id="bottom-nav">
+            <div class="bn-item active" onclick="nav('home')" id="bn-home">
+                <div class="bn-icon">🏠</div>
+                <div class="bn-label">سەرەکی</div>
+                <div class="bn-pip"></div>
+            </div>
+            <div class="bn-item" onclick="nav('explore')" id="bn-explore">
+                <div class="bn-icon">🔍</div>
+                <div class="bn-label">کشف</div>
+                <div class="bn-pip"></div>
+            </div>
+            <div class="bn-item" onclick="nav('learn')" id="bn-learn">
+                <div class="bn-icon">📚</div>
+                <div class="bn-label">فێربوون</div>
+                <div class="bn-pip"></div>
+            </div>
+            <div class="bn-item" onclick="nav('payments')" id="bn-payments">
+                <div class="bn-icon">💳</div>
+                <div class="bn-label">پارەدان</div>
+                <div class="bn-pip"></div>
+            </div>
+            <div class="bn-item" onclick="nav('profile')" id="bn-profile">
+                <div class="bn-icon">👤</div>
+                <div class="bn-label">پروفایل</div>
+                <div class="bn-pip"></div>
+            </div>
+        </nav>
+
+    </div><!-- /app -->
+
+    <!-- ══════════ MODALS ══════════ -->
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="auth-modal" onclick="closeModalOutside(event,this)">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-head">
+                <div class="modal-title">بەخێربێی! 👋</div>
+                <div class="modal-sub">چوونەژوورەوە یان ئەژمێری نوێ دروستبکە</div>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <div class="input-label">ئیمەیڵ یان ژمارەی مۆبایل</div>
+                    <input class="input-field" type="text" placeholder="example@kurdlearn.com" dir="ltr">
+                </div>
+                <div class="input-group">
+                    <div class="input-label">نهێنووژمێر</div>
+                    <input class="input-field" type="password" placeholder="••••••••" dir="ltr">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-fill" style="width:100%"
+                    onclick="closeModal('auth-modal');toast('بەخێربێیت بۆ KurdLearn! 🎉','🎓')">چوونەژوورەوە</button>
+                <button class="btn btn-outline" style="width:100%"
+                    onclick="closeModal('auth-modal');toast('ئەژمێری نوێت دروستبوو ✓','✅')">تۆماربوونی نوێ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructor Modal -->
+    <div class="modal-overlay" id="instructor-modal" onclick="closeModalOutside(event,this)">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-head">
+                <div class="modal-title">👨‍🏫 ببە بە مامۆستا</div>
+                <div class="modal-sub">زانستەکانت بەکاربهێنە و ٧٠٪ی هاتوومەرجی کورسەکانت وەربگرە</div>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <div class="input-label">ناوی تەواو</div>
+                    <input class="input-field" type="text" placeholder="ناو و تەوەرناو">
+                </div>
+                <div class="input-group">
+                    <div class="input-label">بواری پیشەیی</div>
+                    <input class="input-field" type="text" placeholder="HTML، دیزاین، زمان...">
+                </div>
+                <div class="input-group">
+                    <div class="input-label">ئیمەیڵ</div>
+                    <input class="input-field" type="email" placeholder="email@example.com" dir="ltr">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-fill" style="width:100%"
+                    onclick="closeModal('instructor-modal');toast('داواکاریت نێردراو! تیمەکەمان پەیوەندیت پێوە دەکات ✓','📨')">داواکاری
+                    ناردن</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Modal -->
+    <div class="modal-overlay" id="course-modal" onclick="closeModalOutside(event,this)">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <div
+                style="height:160px;background:linear-gradient(135deg,#0f1f38,#071020);display:flex;align-items:center;justify-content:center;font-size:5rem">
+                🌐</div>
+            <div class="modal-head" style="margin-top:20px">
+                <div class="modal-title">HTML لە بنەڕەتەوە تا پیشەیی</div>
+                <div class="modal-sub">بایەزید ئەحمەد · ١٤ کاتژمێر · ٨٤ وانە</div>
+            </div>
+            <div class="modal-body">
+                <div style="display:flex;gap:10px">
+                    <div style="flex:1;padding:12px;background:var(--bg3);border-radius:12px;text-align:center">
+                        <div style="font-size:1.1rem;font-weight:800;color:var(--gold)">٤.٩★</div>
+                        <div style="font-size:.68rem;color:var(--text3)">هەڵسەنگاندن</div>
+                    </div>
+                    <div style="flex:1;padding:12px;background:var(--bg3);border-radius:12px;text-align:center">
+                        <div style="font-size:1.1rem;font-weight:800">٣٤٨٢</div>
+                        <div style="font-size:.68rem;color:var(--text3)">خوێندکار</div>
+                    </div>
+                    <div style="flex:1;padding:12px;background:var(--bg3);border-radius:12px;text-align:center">
+                        <div style="font-size:1.1rem;font-weight:800">١٤h</div>
+                        <div style="font-size:.68rem;color:var(--text3)">کاتژمێر</div>
+                    </div>
+                </div>
+                <div style="font-size:.86rem;color:var(--text2);line-height:1.7">ئەم کورسە بۆ ئەوانەیە کە دەیانەوێت HTML
+                    و CSS فێربن و مەلبەندی مۆدێرن دروستبکەن. لە بنەڕەتەوە دەستپێدەکەین و تا ئاستی پیشەیی دەمانگاتە.
+                </div>
+            </div>
+            <div class="modal-actions">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:0 24px 14px">
+                    <div>
+                        <div style="font-size:.78rem;color:var(--text3);text-decoration:line-through">١٢٠٬٠٠٠ IQD</div>
+                        <div style="font-size:1.4rem;font-weight:900;color:var(--gold)">٧٥٬٠٠٠ IQD</div>
+                    </div>
+                    <div
+                        style="font-size:.72rem;background:rgba(255,99,122,.1);color:var(--rose);border:1px solid rgba(255,99,122,.2);padding:5px 12px;border-radius:50px;font-weight:700">
+                        ٣٧٪ داشکاندن</div>
+                </div>
+                <button class="btn btn-fill" style="width:100%;margin:0 24px;width:calc(100% - 48px)"
+                    onclick="closeModal('course-modal');toast('کورسەکە زێدەکراو! ✓','🎓')">🛒 ئێستا بکڕە</button>
+                <button class="btn btn-ghost" style="margin:8px 24px;width:calc(100% - 48px)"
+                    onclick="closeModal('course-modal')">پاشگەزبوونەوە</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div class="modal-overlay" id="notif-modal" onclick="closeModalOutside(event,this)">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-head">
+                <div class="modal-title">🔔 ئاگادارکردنەوەکان</div>
+            </div>
+            <div class="modal-body">
+                <div style="display:flex;flex-direction:column;gap:10px">
+                    <div
+                        style="display:flex;gap:12px;padding:12px;background:rgba(240,165,0,.06);border:1px solid rgba(240,165,0,.15);border-radius:14px">
+                        <div style="font-size:1.4rem">🎉</div>
+                        <div>
+                            <div style="font-size:.88rem;font-weight:700">کورسی نوێ زێدەکراو!</div>
+                            <div style="font-size:.75rem;color:var(--text2);margin-top:3px">Flutter بۆ iOS و Android —
+                                بایەزید ئەحمەد</div>
+                            <div style="font-size:.68rem;color:var(--text3);margin-top:2px">٢ کاتژمێر پێش</div>
+                        </div>
+                    </div>
+                    <div
+                        style="display:flex;gap:12px;padding:12px;background:var(--glass);border:1px solid var(--border);border-radius:14px">
+                        <div style="font-size:1.4rem">🔥</div>
+                        <div>
+                            <div style="font-size:.88rem;font-weight:700">١٤ ڕۆژی دەوام!</div>
+                            <div style="font-size:.75rem;color:var(--text2);margin-top:3px">باشکاری! بەردەوام بە</div>
+                            <div style="font-size:.68rem;color:var(--text3);margin-top:2px">ئەمڕۆ</div>
+                        </div>
+                    </div>
+                    <div
+                        style="display:flex;gap:12px;padding:12px;background:var(--glass);border:1px solid var(--border);border-radius:14px">
+                        <div style="font-size:1.4rem">🏅</div>
+                        <div>
+                            <div style="font-size:.88rem;font-weight:700">نزیکی بڕوانامە!</div>
+                            <div style="font-size:.75rem;color:var(--text2);margin-top:3px">کورسی ئینگلیزی ٩٥٪ تەواوبووە
+                            </div>
+                            <div style="font-size:.68rem;color:var(--text3);margin-top:2px">دوێنێ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top-up Modal -->
+    <div class="modal-overlay" id="topup-modal" onclick="closeModalOutside(event,this)">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-head">
+                <div class="modal-title">💳 پڕکردنەوەی جزدان</div>
+                <div class="modal-sub">ئامرازی پارەدانی خۆت هەڵبژێرە</div>
+            </div>
+            <div class="modal-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <div style="padding:16px;background:var(--glass);border:1.5px solid var(--border);border-radius:14px;text-align:center;cursor:pointer;transition:.25s"
+                        onclick="selectPayMethod(this)" onmouseenter="this.style.borderColor='var(--gold)'"
+                        onmouseleave="if(!this.classList.contains('sel'))this.style.borderColor='var(--border)'">
+                        <div style="font-size:1.8rem;margin-bottom:6px">📱</div>
+                        <div style="font-size:.82rem;font-weight:700">Zain Cash</div>
+                    </div>
+                    <div style="padding:16px;background:var(--glass);border:1.5px solid var(--border);border-radius:14px;text-align:center;cursor:pointer;transition:.25s"
+                        onclick="selectPayMethod(this)" onmouseenter="this.style.borderColor='var(--gold)'"
+                        onmouseleave="if(!this.classList.contains('sel'))this.style.borderColor='var(--border)'">
+                        <div style="font-size:1.8rem;margin-bottom:6px">🏦</div>
+                        <div style="font-size:.82rem;font-weight:700">FIB</div>
+                    </div>
+                    <div style="padding:16px;background:var(--glass);border:1.5px solid var(--border);border-radius:14px;text-align:center;cursor:pointer;transition:.25s"
+                        onclick="selectPayMethod(this)" onmouseenter="this.style.borderColor='var(--gold)'"
+                        onmouseleave="if(!this.classList.contains('sel'))this.style.borderColor='var(--border)'">
+                        <div style="font-size:1.8rem;margin-bottom:6px">💸</div>
+                        <div style="font-size:.82rem;font-weight:700">Asia Hawala</div>
+                    </div>
+                    <div style="padding:16px;background:var(--glass);border:1.5px solid var(--border);border-radius:14px;text-align:center;cursor:pointer;transition:.25s"
+                        onclick="selectPayMethod(this)" onmouseenter="this.style.borderColor='var(--gold)'"
+                        onmouseleave="if(!this.classList.contains('sel'))this.style.borderColor='var(--border)'">
+                        <div style="font-size:1.8rem;margin-bottom:6px">💳</div>
+                        <div style="font-size:.82rem;font-weight:700">کارتی کرێدیت</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">بڕی پارە (IQD)</div>
+                    <input class="input-field" type="number" placeholder="٢٥٠٬٠٠٠" dir="ltr">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-fill" style="width:100%"
+                    onclick="closeModal('topup-modal');toast('پارەدان سەرکەوتوو بوو! ✓','💰')">پارەدان</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ═══════════════════════════════
+           SPLASH
+        ═══════════════════════════════ */
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const s = document.getElementById('splash');
+                s.style.opacity = '0'; s.style.transition = 'opacity .5s';
+                setTimeout(() => { s.style.display = 'none'; document.getElementById('app').classList.add('ready'); }, 500);
+            }, 2200);
+        });
+
+        /* ═══════════════════════════════
+           NAVIGATION
+        ═══════════════════════════════ */
+        const pages = { home: 'page-home', explore: 'page-explore', learn: 'page-learn', payments: 'page-payments', profile: 'page-profile' };
+        const bns = { home: 'bn-home', explore: 'bn-explore', learn: 'bn-learn', payments: 'bn-payments', profile: 'bn-profile' };
+
+        function nav(key) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+            const pg = document.getElementById(pages[key]);
+            if (pg) { pg.classList.add('active'); pg.scrollTop = 0; }
+            const bn = document.getElementById(bns[key]);
+            if (bn) bn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* ═══════════════════════════════
+           MODALS
+        ═══════════════════════════════ */
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+        function closeModalOutside(e, overlay) { if (e.target === overlay) overlay.classList.remove('open'); }
+
+        /* ═══════════════════════════════
+           TOAST
+        ═══════════════════════════════ */
+        let toastTimer;
+        function toast(msg, icon = '✓') {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            document.getElementById('toast-icon').textContent = icon;
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+        }
+
+        /* ═══════════════════════════════
+           CHIPS
+        ═══════════════════════════════ */
+        function chipActive(el) {
+            const parent = el.parentElement;
+            parent.querySelectorAll('.cat-chip,.explore-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        /* ═══════════════════════════════
+           FAQ
+        ═══════════════════════════════ */
+        function toggleFaq(item) {
+            const ans = item.querySelector('.faq-ans');
+            const ic = item.querySelector('.faq-ic');
+            const open = ans.style.maxHeight !== '0px' && ans.style.maxHeight !== '';
+            document.querySelectorAll('.faq-ans').forEach(a => a.style.maxHeight = '0px');
+            document.querySelectorAll('.faq-ic').forEach(i => { i.textContent = '+'; i.style.transform = ''; });
+            if (!open) { ans.style.maxHeight = '200px'; ic.textContent = '×'; ic.style.transform = 'rotate(45deg)'; }
+        }
+
+        /* ═══════════════════════════════
+           THEME
+        ═══════════════════════════════ */
+        let darkMode = true;
+        function toggleDark(el) {
+            darkMode = !darkMode;
+            el.classList.toggle('on', darkMode);
+            document.body.classList.toggle('light', !darkMode);
+            toast(darkMode ? 'شێوازی تاریک چالاکبوو 🌙' : 'شێوازی ڕووناک چالاکبوو ☀️', darkMode ? '🌙' : '☀️');
+        }
+        function toggleItem(el) {
+            el.classList.toggle('on');
+            toast(el.classList.contains('on') ? 'چالاکبوو ✓' : 'ناچالاکبوو', '⚙️');
+        }
+
+        /* ═══════════════════════════════
+           SEARCH
+        ═══════════════════════════════ */
+        function doSearch() {
+            const q = document.getElementById('search-input').value.trim();
+            if (!q) return;
+            nav('explore');
+            toast('گەڕان بۆ: ' + q, '🔍');
+        }
+        document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+        /* ═══════════════════════════════
+           PAY METHOD SELECT
+        ═══════════════════════════════ */
+        function selectPayMethod(el) {
+            el.closest('.modal-body').querySelectorAll('[onclick^="selectPayMethod"]').forEach(e => {
+                e.classList.remove('sel'); e.style.borderColor = 'var(--border)'; e.style.background = 'var(--glass)';
+            });
+            el.classList.add('sel');
+            el.style.borderColor = 'var(--gold)';
+            el.style.background = 'rgba(240,165,0,.08)';
+        }
+
+        /* ═══════════════════════════════
+           XP bar animate on page show
+        ═══════════════════════════════ */
+        const learnBn = document.getElementById('bn-learn');
+        learnBn.addEventListener('click', () => {
+            setTimeout(() => {
+                const bar = document.getElementById('xp-fill-bar');
+                if (bar) { bar.style.width = '0'; setTimeout(() => { bar.style.width = '62%'; }, 100); }
+            }, 100);
+        });
+    </script>
+</body>
+
+</html>
